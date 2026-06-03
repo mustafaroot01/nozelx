@@ -1,0 +1,27 @@
+# Production builds & large files
+nozzle_backend_production/
+nozzle_backend_production.zip
+*.zip
+
+# Laravel
+backend/vendor/
+backend/.env
+backend/.env.backup
+backend/.env.production
+backend/storage/*.key
+backend/storage/pail/
+backend/public/build/
+backend/public/hot/
+backend/public/storage/
+backend/database/database.sqlite
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+.nova/
+.fleet/
+.zed/

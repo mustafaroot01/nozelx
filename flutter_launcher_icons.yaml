@@ -1,0 +1,8 @@
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "appnozzlelogo.png"
+  remove_alpha_ios: true
+  web:
+    generate: true
+    image_path: "appnozzlelogo.png"
