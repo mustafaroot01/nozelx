@@ -8,6 +8,9 @@ use App\Http\Controllers\Admin\BannersController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
+    if (file_exists(public_path('index.html'))) {
+        return response()->file(public_path('index.html'));
+    }
     return view('welcome');
 });
 
@@ -26,3 +29,12 @@ Route::prefix('bespoke-admin')->group(function () {
     // Categories Toggle
     Route::patch('categories/{category}/toggle', [CategoriesController::class, 'toggle'])->name('admin.categories.toggle');
 });
+
+// React Router Fallback Route
+Route::fallback(function () {
+    if (file_exists(public_path('index.html'))) {
+        return response()->file(public_path('index.html'));
+    }
+    abort(404);
+});
+
