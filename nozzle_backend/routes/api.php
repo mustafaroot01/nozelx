@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\SpecialOfferController;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\InventoryController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UploadController;
 use Illuminate\Http\Request;
@@ -103,6 +104,11 @@ Route::middleware('jwt.auth')->group(function () {
     // Settings
     Route::get('/settings', [SettingsController::class, 'index']);
     Route::post('/settings', [SettingsController::class, 'save']);
+
+    // Notifications (Push campaigns)
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::post('/notifications', [NotificationController::class, 'store']);
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
 
     // Dashboard
     Route::get('/stats', [DashboardController::class, 'stats']);

@@ -115,6 +115,7 @@ class ServiceController extends Controller
 
             $service = Service::create([
                 'name' => $request->name,
+                'title' => $request->name,
                 'description' => $request->description,
                 'short_description' => $request->short_description,
                 'image_url' => $request->image_url,
@@ -194,6 +195,7 @@ class ServiceController extends Controller
 
             $service->update([
                 'name' => $request->name,
+                'title' => $request->name,
                 'description' => $request->description,
                 'short_description' => $request->short_description,
                 'image_url' => $request->image_url,

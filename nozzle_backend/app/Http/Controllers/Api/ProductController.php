@@ -138,7 +138,6 @@ class ProductController extends Controller
         $p->variants = json_encode($variants ?: []);
         $p->features = json_encode($features ?: []);
         $p->specifications = json_encode($specifications ?: new \stdClass());
-        $p->tags = json_encode($tags ?: []);
         $p->seo_title = $request->input('seo_title');
         $p->seo_description = $request->input('seo_description');
         $p->slug = $request->input('slug') ?: Str::slug($request->input('name'));
@@ -148,6 +147,7 @@ class ProductController extends Controller
         $p->status = $request->input('status', 'active');
         $p->is_active = $request->boolean('is_active', true);
         $p->is_deleted = false;
+        $p->image = $request->input('image_url') ?: ($images[0] ?? null);
         $p->save();
 
         if ($request->has('tag_ids')) {
@@ -219,10 +219,7 @@ class ProductController extends Controller
             $specifications = is_string($request->input('specifications')) ? json_decode($request->input('specifications'), true) : $request->input('specifications');
             $p->specifications = json_encode($specifications ?: new \stdClass());
         }
-        if ($request->has('tags')) {
-            $tags = is_string($request->input('tags')) ? json_decode($request->input('tags'), true) : $request->input('tags');
-            $p->tags = json_encode($tags ?: []);
-        }
+        if ($request->has('image_url')) $p->image = $request->input('image_url');
         
         if ($request->has('seo_title')) $p->seo_title = $request->input('seo_title');
         if ($request->has('seo_description')) $p->seo_description = $request->input('seo_description');
@@ -302,10 +299,16 @@ class ProductController extends Controller
         $variants = is_array($product->variants) ? $product->variants : json_decode($product->variants ?? '[]', true);
         $features = is_array($product->features) ? $product->features : json_decode($product->features ?? '[]', true);
         $specifications = is_array($product->specifications) ? $product->specifications : json_decode($product->specifications ?? '{}', true);
-        $tags = is_array($product->tags) ? $product->tags : json_decode($product->tags ?? '[]', true);
 
-        // Fetch related tag_ids
-        $tagIds = $product->tags ? $product->tags()->pluck('product_tags.id')->toArray() : [];
+        // Tags via pivot relationship
+        try {
+            $tagsCollection = $product->tags;
+            $tags = $tagsCollection->map(fn($t) => ['id' => $t->id, 'name' => $t->name])->toArray();
+            $tagIds = $tagsCollection->pluck('id')->toArray();
+        } catch (\Exception $e) {
+            $tags = [];
+            $tagIds = [];
+        }
 
         return [
             "id" => $product->id,
