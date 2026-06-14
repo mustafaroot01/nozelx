@@ -96,8 +96,10 @@ export default function ProductTagsPage() {
     }
   };
 
-  // Filter top-level tags
-  const topLevelTags = tags.filter(t => !t.parent_id);
+  // Filter top-level tags and nest their sub-tags from the flat list
+  const topLevelTags = tags
+    .filter(t => !t.parent_id)
+    .map(t => ({ ...t, sub_tags: tags.filter(st => st.parent_id === t.id) }));
 
   // Toggle is_active status
   const handleToggleActive = async (tagItem) => {
