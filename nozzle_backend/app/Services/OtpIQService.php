@@ -12,8 +12,12 @@ class OtpIQService
 
     public function __construct()
     {
-        $this->apiKey = config('services.otpiq.key') ?: '';
-        $this->url = config('services.otpiq.url') ?: '';
+        // Read from system_settings (admin panel) first, then fall back to env
+        $dbKey = \Illuminate\Support\Facades\DB::table('system_settings')->where('key', 'otp_api_key')->value('value');
+        $dbUrl = \Illuminate\Support\Facades\DB::table('system_settings')->where('key', 'otp_api_url')->value('value');
+
+        $this->apiKey = ($dbKey ? json_decode($dbKey, true) : null) ?: config('services.otpiq.key') ?: '';
+        $this->url    = ($dbUrl ? json_decode($dbUrl, true) : null) ?: config('services.otpiq.url') ?: 'https://api.otpiq.com/api/sms';
     }
 
     /**
