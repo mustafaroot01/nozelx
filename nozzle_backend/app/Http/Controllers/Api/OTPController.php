@@ -272,14 +272,16 @@ class OTPController extends Controller
         $user = User::where('phone', $phone)->first();
 
         if (!$user) {
+            $randomPass = \Illuminate\Support\Str::random(12);
             $user = User::create([
-                'name'      => $request->name,
-                'full_name' => $request->name,
-                'phone'     => $phone,
-                'hashed_password' => Hash::make(\Illuminate\Support\Str::random(12)),
-                'email'     => $phone . '@nozzle.app',
-                'role'      => 'user',
-                'is_active' => true,
+                'name'            => $request->name,
+                'full_name'       => $request->name,
+                'phone'           => $phone,
+                'email'           => $phone . '@nozzle.app',
+                'password'        => $randomPass,
+                'hashed_password' => Hash::make($randomPass),
+                'role'            => 'user',
+                'is_active'       => true,
             ]);
         } else {
             $user->update([
