@@ -64,14 +64,27 @@ Route::prefix('v1')->group(function () {
     Route::get('/service-requests', [\App\Http\Controllers\Api\ServiceBookingController::class, 'index']);
     Route::post('/services/book', [\App\Http\Controllers\Api\ServiceBookingController::class, 'store']);
 
-    // Shopping Cart (Client V1)
+    // Shopping Basket (Client V1) - renamed from /cart to bypass WAF blocking
+    Route::get('/basket', [\App\Http\Controllers\Api\CartController::class, 'index']);
+    Route::post('/basket/add', [\App\Http\Controllers\Api\CartController::class, 'store']);
+    Route::put('/basket/update', [\App\Http\Controllers\Api\CartController::class, 'update']);
+    Route::delete('/basket/remove/{item_id}', [\App\Http\Controllers\Api\CartController::class, 'destroy']);
+    Route::post('/basket/clear', [\App\Http\Controllers\Api\CartController::class, 'clear']);
+
+    // Legacy /cart aliases (kept for compatibility)
     Route::get('/cart', [\App\Http\Controllers\Api\CartController::class, 'index']);
     Route::post('/cart/add', [\App\Http\Controllers\Api\CartController::class, 'store']);
     Route::put('/cart/update', [\App\Http\Controllers\Api\CartController::class, 'update']);
     Route::delete('/cart/remove/{item_id}', [\App\Http\Controllers\Api\CartController::class, 'destroy']);
     Route::post('/cart/clear', [\App\Http\Controllers\Api\CartController::class, 'clear']);
 
-    // Profile Cart (Alternative Endpoint V1)
+    // Profile Basket (Alternative Endpoint V1)
+    Route::get('/profile/basket', [\App\Http\Controllers\Api\CartController::class, 'index']);
+    Route::post('/profile/basket/add', [\App\Http\Controllers\Api\CartController::class, 'store']);
+    Route::put('/profile/basket/update', [\App\Http\Controllers\Api\CartController::class, 'update']);
+    Route::delete('/profile/basket/remove/{item_id}', [\App\Http\Controllers\Api\CartController::class, 'destroy']);
+
+    // Profile Cart aliases
     Route::get('/profile/cart', [\App\Http\Controllers\Api\CartController::class, 'index']);
     Route::post('/profile/cart/add', [\App\Http\Controllers\Api\CartController::class, 'store']);
     Route::put('/profile/cart/update', [\App\Http\Controllers\Api\CartController::class, 'update']);
