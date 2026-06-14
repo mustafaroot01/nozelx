@@ -13,7 +13,11 @@ import {
   CheckCircle,
   AlertCircle,
   Globe,
-  Image as ImageIcon
+  Image as ImageIcon,
+  MessageSquare,
+  Key,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 export default function Settings() {
@@ -39,6 +43,12 @@ export default function Settings() {
   const [appLogo, setAppLogo] = useState('');
   const [appSplash, setAppSplash] = useState('');
   const [invoiceLogo, setInvoiceLogo] = useState('');
+
+  // OTP Settings
+  const [otpApiKey, setOtpApiKey] = useState('');
+  const [otpSenderName, setOtpSenderName] = useState('');
+  const [otpProvider, setOtpProvider] = useState('taqnyat');
+  const [showOtpKey, setShowOtpKey] = useState(false);
 
   // Active tab state
   const [activeTab, setActiveTab] = useState('general'); // general, financial, payments, identity
@@ -79,6 +89,10 @@ export default function Settings() {
         setAppLogo(data.app_logo || '');
         setAppSplash(data.app_splash || '');
         setInvoiceLogo(data.invoice_logo || '');
+
+        setOtpApiKey(data.otp_api_key || '');
+        setOtpSenderName(data.otp_sender_name || '');
+        setOtpProvider(data.otp_provider || 'taqnyat');
       }
     } catch (err) {
       console.error('Error loading settings:', err);
@@ -112,7 +126,10 @@ export default function Settings() {
       card_enabled: cardEnabled,
       app_logo: appLogo,
       app_splash: appSplash,
-      invoice_logo: invoiceLogo
+      invoice_logo: invoiceLogo,
+      otp_api_key: otpApiKey,
+      otp_sender_name: otpSenderName,
+      otp_provider: otpProvider
     };
 
     try {
@@ -132,6 +149,7 @@ export default function Settings() {
     { id: 'financial', name: 'الضرائب والشحن', icon: Truck },
     { id: 'payments', name: 'بوابات الدفع', icon: CreditCard },
     { id: 'identity', name: 'الهوية والشعار', icon: ImageIcon },
+    { id: 'otp', name: 'إعدادات OTP / SMS', icon: MessageSquare },
   ];
 
   return (
@@ -387,6 +405,73 @@ export default function Settings() {
                         onChange={(e) => setCardEnabled(e.target.checked)}
                         className="w-5 h-5 accent-primary-600 rounded cursor-pointer"
                       />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 5: OTP Settings */}
+              {activeTab === 'otp' && (
+                <div className="space-y-6">
+                  <h3 className="font-extrabold text-lg border-b border-gray-100 dark:border-dark-800 pb-3 text-gray-800 dark:text-dark-100 flex items-center gap-2">
+                    <MessageSquare className="text-primary-500" size={20} />
+                    إعدادات رسائل OTP والتحقق برقم الجوال
+                  </h3>
+
+                  <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900 rounded-xl p-4 text-sm text-blue-700 dark:text-blue-400">
+                    <p className="font-bold mb-1">مزود خدمة الرسائل النصية</p>
+                    <p className="text-xs">يتم استخدام هذا المفتاح لإرسال رموز التحقق OTP لتسجيل الدخول عبر رقم الجوال.</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl">
+                    <div>
+                      <label className="block text-sm font-bold mb-1.5 text-gray-700 dark:text-dark-300">مزود الخدمة</label>
+                      <select
+                        value={otpProvider}
+                        onChange={(e) => setOtpProvider(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-dark-800 bg-transparent dark:text-dark-100 focus:border-primary-500 focus:outline-none"
+                      >
+                        <option value="taqnyat">Taqnyat تقنيات</option>
+                        <option value="unifonic">Unifonic</option>
+                        <option value="msegat">Msegat مسجات</option>
+                        <option value="twilio">Twilio</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-bold mb-1.5 text-gray-700 dark:text-dark-300">اسم المرسل (Sender Name)</label>
+                      <div className="relative">
+                        <MessageSquare className="absolute right-3.5 top-3.5 text-gray-400" size={16} />
+                        <input
+                          type="text"
+                          value={otpSenderName}
+                          onChange={(e) => setOtpSenderName(e.target.value)}
+                          placeholder="NozzleApp"
+                          className="w-full pl-4 pr-11 py-2.5 rounded-xl border border-gray-200 dark:border-dark-800 bg-transparent dark:text-dark-100 focus:border-primary-500 focus:outline-none text-left"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-bold mb-1.5 text-gray-700 dark:text-dark-300">مفتاح API الخاص بالخدمة</label>
+                      <div className="relative">
+                        <Key className="absolute right-3.5 top-3.5 text-gray-400" size={16} />
+                        <input
+                          type={showOtpKey ? 'text' : 'password'}
+                          value={otpApiKey}
+                          onChange={(e) => setOtpApiKey(e.target.value)}
+                          placeholder="أدخل مفتاح API الخاص بك هنا..."
+                          className="w-full pl-12 pr-11 py-2.5 rounded-xl border border-gray-200 dark:border-dark-800 bg-transparent dark:text-dark-100 focus:border-primary-500 focus:outline-none font-mono text-sm text-left"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowOtpKey(!showOtpKey)}
+                          className="absolute left-3.5 top-3 text-gray-400 hover:text-gray-600 cursor-pointer"
+                        >
+                          {showOtpKey ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-1.5">يُحفظ المفتاح بشكل مشفر في قاعدة البيانات ولا يظهر للمستخدمين.</p>
                     </div>
                   </div>
                 </div>
