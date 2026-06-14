@@ -142,15 +142,19 @@ class OTPController extends Controller
         $user = User::where('phone', $request->phone)->first();
 
         if (!$user) {
+            $randomPass = \Illuminate\Support\Str::random(12);
             $user = User::create([
-                'name'     => $request->name,
-                'phone'    => $request->phone,
-                // Assign a strong completely random password since auth relies on OTP
-                'hashed_password' => Hash::make(\Illuminate\Support\Str::random(12)),
-                'email'    => $request->phone . '@nozzle.app', // Fallback email
+                'name'            => $request->name,
+                'full_name'       => $request->name,
+                'phone'           => $request->phone,
+                'email'           => $request->phone . '@nozzle.app',
+                'password'        => $randomPass,
+                'hashed_password' => Hash::make($randomPass),
+                'role'            => 'user',
+                'is_active'       => true,
             ]);
         } else {
-             $user->update(['name' => $request->name]);
+            $user->update(['name' => $request->name, 'full_name' => $request->name]);
         }
 
         $token = \App\Helpers\JWTHelper::encode([
