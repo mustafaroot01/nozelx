@@ -113,6 +113,8 @@ Route::middleware('jwt.auth')->group(function () {
     Route::get('/auth/me', [AuthController::class, 'me']);
     Route::put('/auth/profile', [AuthController::class, 'updateProfile']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::delete('/auth/account', [AuthController::class, 'deleteAccount']);
+    Route::delete('/v1/auth/account', [AuthController::class, 'deleteAccount']);
     
     // Settings
     Route::get('/settings', [SettingsController::class, 'index']);

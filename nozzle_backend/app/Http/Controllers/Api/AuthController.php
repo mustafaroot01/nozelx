@@ -137,4 +137,42 @@ class AuthController extends Controller
             'message' => 'تم تسجيل الخروج بنجاح'
         ]);
     }
+
+    /**
+     * API: Delete Account
+     * Deletes the authenticated user's account and all related data.
+     */
+    public function deleteAccount(Request $request)
+    {
+        $authHeader = $request->header('Authorization');
+        if (!$authHeader || !preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+            return response()->json(['success' => false, 'message' => 'غير مصرح'], 401);
+        }
+
+        try {
+            $payload = JWTHelper::decode($matches[1]);
+            if (!$payload || !isset($payload['sub'])) {
+                return response()->json(['success' => false, 'message' => 'رمز غير صالح'], 401);
+            }
+            $user = User::where('email', $payload['sub'])->orWhere('phone', $payload['sub'])->first();
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'رمز غير صالح'], 401);
+        }
+
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'المستخدم غير موجود'], 404);
+        }
+
+        // Delete related data
+        \App\Models\CartItem::where('user_id', $user->id)->delete();
+        \App\Models\UserAddress::where('user_id', $user->id)->delete();
+
+        // Delete the user
+        $user->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تم حذف الحساب بنجاح'
+        ]);
+    }
 }
